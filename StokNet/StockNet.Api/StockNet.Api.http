@@ -1,0 +1,6 @@
+@StockNet.Api_HostAddress = http://localhost:5058
+
+GET {{StockNet.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
