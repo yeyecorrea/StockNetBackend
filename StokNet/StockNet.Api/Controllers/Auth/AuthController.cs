@@ -63,7 +63,11 @@ namespace StockNet.Api.Controllers.Auth
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()
         {
-            var userId = GetUserId();
+            var userId = _authService.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(ApiResponse<UserProfileDto>.Fail("User ID is not available."));
+            }
             var profile = await _authService.GetUserProfile(userId);
             if (profile.IsFailed || profile.Value == null)
             {
@@ -76,7 +80,13 @@ namespace StockNet.Api.Controllers.Auth
         [HttpPut("updateProfile")]
         public async Task<IActionResult> UpdateProfile(UserProfileDto dto)
         {
-            var result = await _authService.UpdateUserProfileAsync(dto, GetUserId());
+            var userId = _authService.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(ApiResponse<bool>.Fail("User ID is not available."));
+            }
+
+            var result = await _authService.UpdateUserProfileAsync(dto,userId);
             if (result.IsFailed)
             {
                 return BadRequest(ApiResponse<bool>.Fail(result.Errors.First().Message));

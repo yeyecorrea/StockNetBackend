@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using StockNet.Data.DataContext;
 using StockNet.Data.Interfaces;
+using System.Linq.Expressions;
 
 namespace StockNet.Data.Repository
 {
@@ -40,7 +42,7 @@ namespace StockNet.Data.Repository
                 _logger.LogError(ex, "Erro al obtener entidad de tipo {EntityType} con id {Id}", typeof(TEntity).Name, id);
                 throw;
             }
-            
+
         }
 
         /// <summary>
@@ -108,6 +110,24 @@ namespace StockNet.Data.Repository
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro al eliminar entidad de tipo {EntityType} con id {Id}", typeof(TEntity).Name, id);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Metodo que busca la primera entidad que cumpla con el predicado especificado.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<TEntity?> FindFirstAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            try
+            {
+                return await _context.Set<TEntity>().FirstOrDefaultAsync(predicate);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro al buscar la primera entidad de tipo {EntityType} con el predicado {Predicate}", typeof(TEntity).Name, predicate);
                 throw;
             }
         }

@@ -1,12 +1,14 @@
 ﻿using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using StockNet.Application.DTOs;
 using StockNet.Application.DTOs.Auth;
 using StockNet.Business.Interfaces;
 using StockNet.Data.Interfaces;
 using StockNet.Domain.Entities;
+using System.Security.Claims;
 
-namespace StockNet.Business.Services
+namespace StockNet.Business.Services.Auth
 {
     public class AuthService : IAuthService
     {
@@ -14,12 +16,15 @@ namespace StockNet.Business.Services
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IJwtGenerator _jwtGenerator;
         private readonly IAuthRepository _authRepository;
-        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, IAuthRepository authRepository)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public AuthService(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IJwtGenerator jwtGenerator, IAuthRepository authRepository, 
+            IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtGenerator = jwtGenerator;
             _authRepository = authRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         /// <summary>
@@ -144,6 +149,16 @@ namespace StockNet.Business.Services
         public Task LogoutAsync()
         {
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Metodo para obtener el ID del usuario actual desde los claims del contexto HTTP.
+        /// </summary>
+        /// <returns></returns>
+        public string GetUserId()
+        {
+            var claims = _httpContextAccessor.HttpContext?.User?.Claims.ToList();
+            return claims?.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "sub")?.Value ?? string.Empty;
         }
     }
 }

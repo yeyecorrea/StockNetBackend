@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StockNet.Data.DataContext;
 
@@ -11,9 +12,11 @@ using StockNet.Data.DataContext;
 namespace StockNet.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20250702012439_addrelacionentrenegocioyusuario")]
+    partial class addrelacionentrenegocioyusuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,9 +189,6 @@ namespace StockNet.Data.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int?>("NegocioId")
-                        .HasColumnType("int");
-
                     b.Property<string>("NombreCompleto")
                         .HasColumnType("nvarchar(max)");
 
@@ -291,9 +291,6 @@ namespace StockNet.Data.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("NegocioId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -305,8 +302,6 @@ namespace StockNet.Data.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("NegocioId");
 
                     b.ToTable("Clientes");
                 });
@@ -749,17 +744,6 @@ namespace StockNet.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StockNet.Domain.Entities.Cliente", b =>
-                {
-                    b.HasOne("StockNet.Domain.Entities.Negocio", "Negocio")
-                        .WithMany("Clientes")
-                        .HasForeignKey("NegocioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Negocio");
-                });
-
             modelBuilder.Entity("StockNet.Domain.Entities.Compra", b =>
                 {
                     b.HasOne("StockNet.Domain.Entities.Proveedor", "Proveedor")
@@ -888,11 +872,6 @@ namespace StockNet.Data.Migrations
             modelBuilder.Entity("StockNet.Domain.Entities.MateriaPrima", b =>
                 {
                     b.Navigation("DetallesCompra");
-                });
-
-            modelBuilder.Entity("StockNet.Domain.Entities.Negocio", b =>
-                {
-                    b.Navigation("Clientes");
                 });
 
             modelBuilder.Entity("StockNet.Domain.Entities.Producto", b =>

@@ -23,5 +23,14 @@ namespace StockNet.Domain.Entities
 
         [StringLength(100)]
         public string Correo { get; set; }
+
+        // Clave foránea
+        public string ApplicationUserId { get; set; }
+
+        // Propiedad de navegación
+        public ApplicationUser? ApplicationUser { get; set; }
+
+        // Relación con Clientes
+        public ICollection<Cliente> Clientes { get; set; } = new List<Cliente>();
     }
 }

@@ -1,16 +1,21 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using StockNet.Application.DTOs.Dashboard;
 using StockNet.Business.Interfaces;
+using StockNet.Business.Interfaces.Dashboard;
 using StockNet.Business.Mapping;
 using StockNet.Business.Services;
+using StockNet.Business.Services.Auth;
+using StockNet.Business.Services.Dashboard;
 using StockNet.Data.DataContext;
 using StockNet.Data.Interfaces;
+using StockNet.Data.Interfaces.Dashboard;
 using StockNet.Data.Repository;
+using StockNet.Data.Repository.Dashboard;
 using StockNet.Domain.Entities;
 using StockNet.Shared.Security;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +35,20 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 builder.Services.AddScoped<IJwtGenerator, JwtGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Add base services
+builder.Services.AddScoped<IBaseService<Negocio, BusinessDto>, BaseService<Negocio, BusinessDto>>();
+builder.Services.AddScoped<IBaseService<Cliente, CustomerDto>, BaseService<Cliente, CustomerDto>>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+builder.Services.AddScoped<IBusinessService, BusinessService>();
+
+// Add base repository
+builder.Services.AddScoped<IBaseRepository<int, Negocio>, BaseRespository<int, Negocio>>();
+builder.Services.AddScoped<IBaseRepository<int, Cliente>, BaseRespository<int, Cliente>>();
+
 // Add repository
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 // add identity services
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -63,6 +80,34 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader()
                         .AllowCredentials());
 });
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "StockNet API", Version = "v1" });
+
+    // Configurar seguridad JWT para Swagger
+    var jwtSecurityScheme = new OpenApiSecurityScheme
+    {
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Description = "Ingresa tu token JWT. Ejemplo: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        Reference = new OpenApiReference
+        {
+            Id = JwtBearerDefaults.AuthenticationScheme,
+            Type = ReferenceType.SecurityScheme
+        }
+    };
+
+    options.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { jwtSecurityScheme, Array.Empty<string>() }
+    });
+});
+
 
 
 

@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using StockNet.Business.Interfaces;
 using StockNet.Data.Interfaces;
+using System.Linq.Expressions;
 
 namespace StockNet.Business.Services
 {
-    public class BaseService<TEntity, TDto> : IBaseServices<TEntity, TDto> where TEntity : class, new() where TDto : class
+    public class BaseService<TEntity, TDto> : IBaseService<TEntity, TDto> where TEntity : class, new() where TDto : class
     {
         private readonly IBaseRepository<int, TEntity> _repository;
         private readonly IMapper _mapper;
@@ -21,7 +22,7 @@ namespace StockNet.Business.Services
         /// <returns></returns>
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-           return await _repository.GetAll().ToListAsync();
+            return await _repository.GetAll().ToListAsync();
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace StockNet.Business.Services
         /// <returns></returns>
         public async Task<TEntity> GetByIdAsync(int id)
         {
-           return await _repository.GetByIdAsync(id);
+            return await _repository.GetByIdAsync(id);
 
         }
 
@@ -65,7 +66,17 @@ namespace StockNet.Business.Services
         /// <returns></returns>
         public async Task DeleteAsync(int id)
         {
-           await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
+        }
+
+        /// <summary>
+        /// Busca la primera entidad que cumpla con el predicado especificado.
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task<TEntity> FindFirstAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _repository.FindFirstAsync(predicate);
         }
     }
 }

@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace StockNet.Business.Services
+namespace StockNet.Business.Services.Auth
 {
     public class JwtGenerator : IJwtGenerator
     {
@@ -35,6 +35,12 @@ namespace StockNet.Business.Services
                 new Claim("fotoUrl", user.FotoPerfilUrl ?? ""),
 
             };
+
+            // se agrega el NegocioId si el usuario tiene un negocio asociado
+            if (user.NegocioId.HasValue)
+            {
+                claims.Add(new Claim("negocioId", user.NegocioId.Value.ToString()));
+            }
 
             // Clave secreta para firmar el token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));

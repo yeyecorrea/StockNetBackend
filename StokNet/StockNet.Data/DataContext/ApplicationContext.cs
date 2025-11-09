@@ -23,5 +23,23 @@ namespace StockNet.Data.DataContext
         public DbSet<CostoFijo> CostosFijos { get; set; }
         public DbSet<MateriaPrima> materiaPrimas { get; set; }
         public DbSet<CategoriaMateriaPrima> CategoriasMateriaPrima { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasOne(a => a.Negocio)
+                .WithOne(n => n.ApplicationUser)
+                .HasForeignKey<Negocio>(n => n.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Cliente>()
+                .HasOne(c => c.Negocio)
+                .WithMany(n => n.Clientes)
+                .HasForeignKey(c => c.NegocioId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
     }
 }

@@ -11,5 +11,6 @@ namespace StockNet.Business.Interfaces
         Task LogoutAsync();
         Task<Result<AuthResponseDto>> RegisterAsync(RegisterDto dto);
         Task<Result<bool>> UpdateUserProfileAsync(UserProfileDto userProfileDto, string userId);
+        string GetUserId();
     }
 }

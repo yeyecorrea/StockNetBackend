@@ -7,5 +7,7 @@ namespace StockNet.Domain.Entities
         public string? NombreCompleto { get; set; }
         public string? FotoPerfilUrl { get; set; }
         public DateTime? FechaNacimiento { get; set; }
+        public int? NegocioId { get; set; }
+        public Negocio? Negocio { get; set; }
     }
 }

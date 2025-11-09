@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace StockNet.Domain.Entities
 {
@@ -30,5 +24,9 @@ namespace StockNet.Domain.Entities
 
         // Relación con Ventas
         public ICollection<Venta> Ventas { get; set; }
+
+        //Relacion con Negocio
+        public int NegocioId { get; set; }
+        public Negocio Negocio { get; set; }
     }
 }
